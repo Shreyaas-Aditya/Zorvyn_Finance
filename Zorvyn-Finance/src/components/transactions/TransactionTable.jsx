@@ -126,11 +126,11 @@ export default function TransactionTable() {
   }
 
   return (
-    <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md dark:border-gray-700 dark:bg-gray-800 dark:shadow-lg">
+    <section className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-lg">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Transactions</h2>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-200">
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
             Search, filter and sort your activity. {isAdmin ? 'Admin can manage transactions.' : 'Viewer is read-only.'}
           </p>
         </div>
@@ -139,7 +139,7 @@ export default function TransactionTable() {
           <button
             type="button"
             onClick={exportCsv}
-            className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+            className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
           >
             Export CSV
           </button>
@@ -164,14 +164,14 @@ export default function TransactionTable() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by category, note, amount..."
-            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+            className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-9 pr-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-neutral-700 dark:bg-neutral-950 dark:text-white"
           />
         </div>
 
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
-          className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-neutral-700 dark:bg-neutral-950 dark:text-white"
         >
           <option value="all">All types</option>
           <option value="income">Income</option>
@@ -181,7 +181,7 @@ export default function TransactionTable() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-emerald-500/30 dark:border-neutral-700 dark:bg-neutral-950 dark:text-white"
         >
           <option value="all">All categories</option>
           {categories.map((c) => (
@@ -192,10 +192,10 @@ export default function TransactionTable() {
         </select>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+      <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
-            <thead className="bg-gray-50 text-gray-600 dark:bg-gray-900 dark:text-gray-200">
+            <thead className="bg-gray-50 text-gray-600 dark:bg-neutral-950 dark:text-gray-400">
               <tr>
                 <th className="px-4 py-3">
                   <ThButton active={sort.key === 'date'} dir={sort.dir} onClick={() => toggleSort('date')}>
@@ -213,36 +213,36 @@ export default function TransactionTable() {
                 {isAdmin ? <th className="px-4 py-3 text-right">Actions</th> : null}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
               {filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-10 text-center text-sm text-gray-500 dark:text-gray-200">
+                  <td colSpan={isAdmin ? 6 : 5} className="px-4 py-10 text-center text-sm text-gray-500 dark:text-gray-400">
                     No transactions found. {isAdmin ? 'Add one to get started.' : ''}
                   </td>
                 </tr>
               ) : (
                 filteredTransactions.map((t) => (
-                  <tr key={t.id} className="bg-white transition hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                  <tr key={t.id} className="bg-white transition hover:bg-gray-50 dark:bg-neutral-900 dark:hover:bg-neutral-800">
                     <td className="whitespace-nowrap px-4 py-3 text-gray-900 dark:text-white">
                       {new Date(t.date).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-200">{t.category}</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{t.category}</td>
                     <td className="px-4 py-3">
                       <span
                         className={cn(
                           'inline-flex rounded-full px-2 py-1 text-xs font-medium',
                           t.type === 'income'
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300'
-                            : 'bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-300',
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+                            : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300',
                         )}
                       >
                         {t.type === 'income' ? 'Income' : 'Expense'}
                       </span>
                     </td>
-                    <td className={cn('whitespace-nowrap px-4 py-3 font-medium', t.type === 'income' ? 'text-emerald-600' : 'text-rose-600')}>
+                    <td className={cn('whitespace-nowrap px-4 py-3 font-medium', t.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400')}>
                       {t.type === 'income' ? '+' : '-'}{formatCurrency(t.amount)}
                     </td>
-                    <td className="max-w-[18rem] truncate px-4 py-3 text-gray-600 dark:text-gray-200" title={t.note ?? ''}>
+                    <td className="max-w-[18rem] truncate px-4 py-3 text-gray-600 dark:text-gray-400" title={t.note ?? ''}>
                       {t.note || '—'}
                     </td>
                     {isAdmin ? (
@@ -251,14 +251,14 @@ export default function TransactionTable() {
                           <button
                             type="button"
                             onClick={() => openEdit(t.id)}
-                            className="inline-flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+                            className="inline-flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
                           >
                             <Pencil className="size-3" /> Edit
                           </button>
                           <button
                             type="button"
                             onClick={() => onDelete(t.id)}
-                            className="inline-flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+                            className="inline-flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 text-xs text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white dark:hover:bg-neutral-700"
                           >
                             <Trash2 className="size-3 text-rose-500" /> Delete
                           </button>

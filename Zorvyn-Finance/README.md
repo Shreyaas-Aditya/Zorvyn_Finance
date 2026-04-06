@@ -133,6 +133,50 @@ Zorvyn-Finance/
 └── README.md
 ```
 
+## 🧪 Testing
+
+### Test Credentials
+
+The application comes with pre-configured test accounts for easy testing:
+
+#### Viewer Account (Read-only)
+- **Email**: `tester@tester.com`
+- **Password**: `tester`
+- **Role**: Viewer (can view transactions, cannot modify)
+
+#### Admin Account (Full access)
+- **Email**: `admin@admin.com`
+- **Password**: `admin@zorvyn`
+- **Role**: Admin (can add, edit, delete transactions)
+
+### Testing Different Features
+
+1. **Login as Viewer** (`tester@tester.com`) to test:
+   - Dashboard view with read-only transactions
+   - Search, filter, and sort functionality
+   - Charts and analytics
+   - CSV export
+   - No add/edit/delete buttons visible
+
+2. **Login as Admin** (`admin@admin.com`) to test:
+   - All viewer features
+   - Add new transactions
+   - Edit existing transactions
+   - Delete transactions
+   - Full CRUD functionality
+
+### Quick Test Flow
+
+```bash
+# 1. Start the development server
+npm run dev
+
+# 2. Visit http://localhost:5173
+# 3. Login with either test account
+# 4. Explore the dashboard features
+# 5. Try switching between accounts to see role differences
+```
+
 ## 🔑 User Roles
 
 ### Viewer (Default for Signups)

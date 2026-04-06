@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext'
 const TransactionsContext = createContext(null)
 
 export function TransactionsProvider({ children }) {
-  const { user, role } = useAuth()
+  const { user, role, session, loading: authLoading } = useAuth()
   const isAdmin = role === 'admin'
 
   const [transactions, setTransactions] = useState([])
@@ -22,18 +22,34 @@ export function TransactionsProvider({ children }) {
     let mounted = true
 
     async function load() {
+      // Wait for auth to finish loading
+      if (authLoading) {
+        console.log('TransactionsContext: Auth still loading, waiting...')
+        return
+      }
+
       if (!user?.id) {
+        console.log('TransactionsContext: No user ID, skipping fetch')
         setTransactions([])
         setLoading(false)
         return
       }
 
+      // Extra safety: ensure we have a session
+      if (!session) {
+        console.log('TransactionsContext: No session, waiting...')
+        return
+      }
+
+      console.log('TransactionsContext: Fetching transactions for user:', user.id)
       setLoading(true)
       setError(null)
       try {
         const rows = await listTransactions(user.id)
+        console.log('TransactionsContext: Loaded transactions:', rows.length)
         if (mounted) setTransactions(rows)
       } catch (e) {
+        console.error('TransactionsContext: Error loading transactions:', e)
         if (mounted) setError(e)
       } finally {
         if (mounted) setLoading(false)
@@ -44,7 +60,7 @@ export function TransactionsProvider({ children }) {
     return () => {
       mounted = false
     }
-  }, [user?.id])
+  }, [user?.id, session, authLoading])
 
   const categories = useMemo(() => {
     const set = new Set(transactions.map((t) => t.category).filter(Boolean))

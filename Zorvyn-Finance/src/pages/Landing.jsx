@@ -6,12 +6,12 @@ import { useTheme } from '../hooks/useTheme'
 
 function Feature({ icon: Icon, title, desc }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-md transition hover:-translate-y-0.5 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:shadow-lg">
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-md transition hover:-translate-y-0.5 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-lg">
       <div className="mb-3 inline-flex size-10 items-center justify-center rounded-xl bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300">
         <Icon className="size-5" />
       </div>
       <p className="text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
-      <p className="mt-1 text-sm text-gray-500 dark:text-gray-200">{desc}</p>
+      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{desc}</p>
     </div>
   )
 }
@@ -28,7 +28,7 @@ export default function Landing() {
     <>
       <button
         onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
         aria-label="Toggle theme"
         title="Toggle theme"
       >
@@ -36,7 +36,7 @@ export default function Landing() {
       </button>
       <Link
         to="/login"
-        className="inline-flex h-9 items-center rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+        className="inline-flex h-9 items-center rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 shadow-sm transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800"
       >
         Login
       </Link>
@@ -58,8 +58,8 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-dvh bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-      <SpotlightNavbar 
+    <div className="min-h-dvh bg-white text-gray-900 dark:bg-black dark:text-white">
+      <SpotlightNavbar
         navItems={navItems.map(item => 
           item.label === 'Features' 
             ? { ...item, onClick: handleFeaturesClick } 
@@ -78,7 +78,7 @@ export default function Landing() {
             <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-tight text-gray-900 dark:text-white md:text-5xl">
               A clean finance dashboard to track what matters.
             </h1>
-            <p className="mt-4 text-base text-gray-600 dark:text-gray-200">
+            <p className="mt-4 text-base text-gray-600 dark:text-gray-400">
               Track expenses, visualize trends, and get quick insights. Powered by Supabase Auth + Database.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -90,16 +90,16 @@ export default function Landing() {
               </Link>
               <Link
                 to="/login"
-                className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 shadow-md transition hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:shadow-lg dark:hover:bg-gray-700"
+                className="inline-flex h-10 items-center rounded-xl border border-gray-200 bg-white px-4 text-sm text-gray-900 shadow-md transition hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white dark:shadow-lg dark:hover:bg-neutral-800"
               >
                 Open Dashboard
               </Link>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-700 dark:bg-gray-800 dark:shadow-lg">
+          <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-lg">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl bg-gray-50 p-4 dark:bg-gray-900">
+              <div className="rounded-2xl bg-gray-50 p-4 dark:bg-black">
                 <p className="text-xs text-gray-500 dark:text-gray-400">Balance</p>
                 <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-white">$9,420</p>
               </div>
@@ -113,14 +113,14 @@ export default function Landing() {
               </div>
             </div>
             <div className="mt-5 grid gap-3">
-              <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+              <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-black">
                 <BarChart3 className="size-5 text-emerald-600" />
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Analytics</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Line + pie charts with Recharts</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+              <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-black">
                 <Shield className="size-5 text-emerald-600" />
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">Role-based access</p>
@@ -133,7 +133,7 @@ export default function Landing() {
 
         <section className="mt-12" id="features">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Features</h2>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-200">Everything you need in a small, fast dashboard.</p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Everything you need in a small, fast dashboard.</p>
           <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
             <Feature icon={BarChart3} title="Track & visualize" desc="Balance trend + spending categories at a glance." />
             <Feature icon={Sparkles} title="Insights" desc="Automatic monthly comparisons and top categories." />
@@ -145,7 +145,7 @@ export default function Landing() {
         <section className="mt-16">
           <div className="text-center">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Built with modern technologies</h2>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-200">Powered by industry-leading tools and frameworks</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Powered by industry-leading tools and frameworks</p>
           </div>
           <LogoSlider
             logos={[
@@ -161,7 +161,7 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-gray-200 py-8 text-center text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
+      <footer className="border-t border-gray-200 py-8 text-center text-xs text-gray-500 dark:border-neutral-800 dark:text-gray-400">
         Zorvyn Finance — built with React + Supabase
       </footer>
     </div>

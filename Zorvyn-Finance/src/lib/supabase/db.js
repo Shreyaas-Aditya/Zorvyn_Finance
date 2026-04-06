@@ -29,14 +29,38 @@ export async function getOrCreateProfile(userId, name) {
 }
 
 export async function listTransactions(userId) {
-  const { data, error } = await supabase
-    .from('transactions')
-    .select('id,user_id,amount,category,type,date,note')
-    .eq('user_id', userId)
-    .order('date', { ascending: false })
-
-  if (error) throw error
-  return data ?? []
+  console.log('db.listTransactions: Fetching for userId:', userId)
+  
+  // Debug: Check if we have an active session
+  const { data: { session } } = await supabase.auth.getSession()
+  console.log('db.listTransactions: Session check:', {
+    hasSession: !!session,
+    hasAccessToken: !!session?.access_token,
+    userId: session?.user?.id
+  })
+  
+  if (!session) {
+    throw new Error('No active session - please log in again')
+  }
+  
+  try {
+    const { data, error } = await supabase
+      .from('transactions')
+      .select('id,user_id,amount,category,type,date')
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
+    
+    if (error) {
+      console.error('db.listTransactions: Error:', error)
+      throw error
+    }
+    
+    console.log('db.listTransactions: Success, rows:', data?.length || 0)
+    return data ?? []
+  } catch (err) {
+    console.error('db.listTransactions: Exception:', err)
+    throw err
+  }
 }
 
 export async function createTransaction(payload) {

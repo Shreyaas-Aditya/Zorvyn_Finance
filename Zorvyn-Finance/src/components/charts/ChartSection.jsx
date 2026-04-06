@@ -43,20 +43,23 @@ export default function ChartSection({ transactions }) {
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       <Card title="Balance trend">
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={balanceTrend} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.25} />
-              <XAxis dataKey="date" tickFormatter={formatShortDate} tick={{ fontSize: 12 }} />
-              <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 12 }} />
-              <ReTooltip formatter={(v) => formatCurrency(v)} labelFormatter={(l) => new Date(l).toLocaleDateString()} />
-              <Line type="monotone" dataKey="balance" stroke="#10b981" strokeWidth={2.25} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
         {balanceTrend.length === 0 ? (
-          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">No data yet. Add transactions to see trends.</p>
-        ) : null}
+          <div className="flex h-64 items-center justify-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No data yet. Add transactions to see trends.</p>
+          </div>
+        ) : (
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={balanceTrend} margin={{ top: 10, right: 12, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.25} />
+                <XAxis dataKey="date" tickFormatter={formatShortDate} tick={{ fontSize: 12 }} />
+                <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 12 }} />
+                <ReTooltip formatter={(v) => formatCurrency(v)} labelFormatter={(l) => new Date(l).toLocaleDateString()} />
+                <Line type="monotone" dataKey="balance" stroke="#10b981" strokeWidth={2.25} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )}
       </Card>
 
       <Card title="Spending by category">

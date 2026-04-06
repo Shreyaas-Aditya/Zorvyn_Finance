@@ -34,8 +34,8 @@ export function SpotlightNavbar({ logo, navItems = [], rightSection, className }
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300',
         isScrolled
-          ? 'border-b border-gray-200 bg-white/80 backdrop-blur-xl shadow-sm dark:border-gray-700 dark:bg-gray-900/80'
-          : 'border-b border-gray-200/40 bg-white/50 backdrop-blur-md dark:border-gray-700/50 dark:bg-gray-900/50',
+          ? 'border-b border-gray-200 bg-white/80 backdrop-blur-xl shadow-sm dark:border-neutral-800 dark:bg-black/80'
+          : 'border-b border-gray-200/40 bg-white/50 backdrop-blur-md dark:border-neutral-800/50 dark:bg-black/50',
         className,
       )}
       onMouseMove={handleMouseMove}

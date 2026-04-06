@@ -26,6 +26,20 @@
   --ring: 52 211 153;
 }
 
+/* Logo Slider Animation */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+.animate-scroll {
+  animation: scroll linear infinite;
+}
+
 html,
 body {
   height: 100%;

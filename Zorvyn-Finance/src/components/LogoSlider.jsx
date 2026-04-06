@@ -69,21 +69,6 @@ export function LogoSlider({ logos = [], speed = 30, direction = 'left', classNa
           ))}
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes scroll {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(calc(-50%));
-          }
-        }
-
-        .animate-scroll {
-          animation: scroll linear infinite;
-        }
-      `}</style>
     </div>
   )
 }
