@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zorvyn Finance Dashboard</title>
+    <!-- Apply theme immediately to prevent flash -->
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('zorvyn.finance.theme.v1');
+          // Only add dark class if explicitly set to 'dark'
+          // Otherwise default to light mode (no class)
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            // Ensure dark class is removed for light mode
+            document.documentElement.classList.remove('dark');
+            // If no theme set, save 'light' as default
+            if (!theme) {
+              localStorage.setItem('zorvyn.finance.theme.v1', 'light');
+            }
+          }
+        } catch (e) {
+          // Ignore errors
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

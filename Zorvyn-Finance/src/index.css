@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Theme tokens - CSS variables for custom styling */
+:root {
+  color-scheme: light;
+
+  --bg: 255 255 255;
+  --fg: 17 24 39;
+  --muted: 107 114 128;
+  --card: 255 255 255;
+  --border: 229 231 235;
+  --ring: 16 185 129;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: 17 24 39;
+  --fg: 255 255 255;
+  --muted: 156 163 175;
+  --card: 31 41 55;
+  --border: 55 65 81;
+  --ring: 52 211 153;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Default to light mode background and text */
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+* {
+  border-color: rgb(var(--border));
+}
+
+::selection {
+  background: color-mix(in srgb, rgb(var(--ring)) 25%, transparent);
+}
+
+/* Nice default focus without adding a library */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, rgb(var(--ring)) 25%, transparent);
+}
+
+/* Logo Slider Animation */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+.animate-scroll {
+  animation: scroll linear infinite;
+}
