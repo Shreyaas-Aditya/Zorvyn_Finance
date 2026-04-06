@@ -2,6 +2,42 @@
 
 A modern, full-featured finance tracking dashboard built with React, Tailwind CSS, Supabase, and shadcn/ui components.
 
+
+Vercel: https://zorvyn-finance-delta.vercel.app/
+
+## 🧪 Testing
+
+### Test Credentials
+
+The application comes with pre-configured test accounts for easy testing:
+
+#### Viewer Account (Read-only)
+- **Email**: `tester@tester.com`
+- **Password**: `tester`
+- **Role**: Viewer (can view transactions, cannot modify)
+
+#### Admin Account (Full access)
+- **Email**: `admin@admin.com`
+- **Password**: `admin@zorvyn`
+- **Role**: Admin (can add, edit, delete transactions)
+
+### Testing Different Features
+
+1. **Login as Viewer** (`tester@tester.com`) to test:
+   - Dashboard view with read-only transactions
+   - Search, filter, and sort functionality
+   - Charts and analytics
+   - CSV export
+   - No add/edit/delete buttons visible
+
+2. **Login as Admin** (`admin@admin.com`) to test:
+   - All viewer features
+   - Add new transactions
+   - Edit existing transactions
+   - Delete transactions
+   - Full CRUD functionality
+
+
 ## 🎯 Features
 
 ### Authentication & Authorization
@@ -132,38 +168,6 @@ Zorvyn-Finance/
 ├── SUPABASE_SCHEMA.md     # Database schema documentation
 └── README.md
 ```
-
-## 🧪 Testing
-
-### Test Credentials
-
-The application comes with pre-configured test accounts for easy testing:
-
-#### Viewer Account (Read-only)
-- **Email**: `tester@tester.com`
-- **Password**: `tester`
-- **Role**: Viewer (can view transactions, cannot modify)
-
-#### Admin Account (Full access)
-- **Email**: `admin@admin.com`
-- **Password**: `admin@zorvyn`
-- **Role**: Admin (can add, edit, delete transactions)
-
-### Testing Different Features
-
-1. **Login as Viewer** (`tester@tester.com`) to test:
-   - Dashboard view with read-only transactions
-   - Search, filter, and sort functionality
-   - Charts and analytics
-   - CSV export
-   - No add/edit/delete buttons visible
-
-2. **Login as Admin** (`admin@admin.com`) to test:
-   - All viewer features
-   - Add new transactions
-   - Edit existing transactions
-   - Delete transactions
-   - Full CRUD functionality
 
 ### Quick Test Flow
 
