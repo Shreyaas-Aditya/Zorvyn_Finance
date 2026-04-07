@@ -32,23 +32,34 @@ export default function Login() {
     setError('')
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ 
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ 
         email: email.trim(), 
         password 
       })
       
       if (signInError) {
+        console.error('❌ Login failed:', signInError.message)
         setError(signInError.message)
-        toast.error(signInError.message)
+        toast.error('Invalid credentials. Please try again.')
         setLoading(false)
         return
       }
 
+      if (!data?.session) {
+        console.error('❌ No session returned')
+        setError('Login failed. Please try again.')
+        toast.error('Login failed. Please try again.')
+        setLoading(false)
+        return
+      }
+
+      console.log('✅ Login successful for:', data.user.email)
       toast.success('Successfully logged in!')
       // Navigation happens in useEffect when user updates
     } catch (err) {
+      console.error('❌ Login error:', err)
       setError(err?.message || 'An unexpected error occurred')
-      toast.error(err?.message || 'An unexpected error occurred')
+      toast.error('Invalid credentials. Please try again.')
       setLoading(false)
     }
   }

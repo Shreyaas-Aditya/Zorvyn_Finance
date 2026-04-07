@@ -1,5 +1,30 @@
 import { supabase } from './client'
 
+// Supabase REST API base config
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+// Helper for raw fetch - BYPASSES SUPABASE CLIENT COMPLETELY
+async function rawFetch(endpoint, options = {}, accessToken = null) {
+  const url = `${SUPABASE_URL}/rest/v1/${endpoint}`
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation',
+    ...(accessToken && { 'Authorization': `Bearer ${accessToken}` }),
+    ...options.headers
+  }
+  
+  const response = await fetch(url, { ...options, headers })
+  
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`HTTP ${response.status}: ${errorText}`)
+  }
+  
+  return response.json()
+}
+
 export async function getProfile(userId) {
   const { data, error } = await supabase.from('profiles').select('id,name,role').eq('id', userId).single()
   if (error) throw error
@@ -20,7 +45,6 @@ export async function getOrCreateProfile(userId, name) {
   try {
     return await getProfile(userId)
   } catch (error) {
-    // If profile doesn't exist, create it
     if (error.code === 'PGRST116' || error.message?.includes('No rows')) {
       return await createProfile(userId, name)
     }
@@ -28,54 +52,50 @@ export async function getOrCreateProfile(userId, name) {
   }
 }
 
-export async function listTransactions(userId) {
-  console.log('db.listTransactions: Fetching for userId:', userId)
-  
-  // Debug: Check if we have an active session
-  const { data: { session } } = await supabase.auth.getSession()
-  console.log('db.listTransactions: Session check:', {
-    hasSession: !!session,
-    hasAccessToken: !!session?.access_token,
-    userId: session?.user?.id
-  })
-  
-  if (!session) {
-    throw new Error('No active session - please log in again')
+// NUCLEAR OPTION: Use raw fetch, receive token from context
+export async function listTransactions(userId, accessToken) {
+  if (!userId) {
+    console.error('❌ listTransactions: No userId')
+    return []
   }
   
+  console.log('🔍 listTransactions: Fetching for user:', userId)
+  console.log('🔑 Token provided:', accessToken ? 'YES' : 'NO')
+  
   try {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('id,user_id,amount,category,type,date')
-      .eq('user_id', userId)
-      .order('date', { ascending: false })
+    const data = await rawFetch(
+      `transactions?user_id=eq.${userId}&order=date.desc`,
+      { method: 'GET' },
+      accessToken
+    )
     
-    if (error) {
-      console.error('db.listTransactions: Error:', error)
-      throw error
-    }
-    
-    console.log('db.listTransactions: Success, rows:', data?.length || 0)
-    return data ?? []
+    console.log('✅ Fetched', data.length, 'transactions!')
+    return data || []
   } catch (err) {
-    console.error('db.listTransactions: Exception:', err)
+    console.error('❌ listTransactions error:', err)
     throw err
   }
 }
 
-export async function createTransaction(payload) {
-  const { data, error } = await supabase.from('transactions').insert(payload).select('*').single()
-  if (error) throw error
-  return data
+export async function createTransaction(payload, accessToken) {
+  console.log('➕ createTransaction:', payload)
+  return rawFetch('transactions', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  }, accessToken).then(arr => arr[0])
 }
 
-export async function updateTransaction(id, patch) {
-  const { data, error } = await supabase.from('transactions').update(patch).eq('id', id).select('*').single()
-  if (error) throw error
-  return data
+export async function updateTransaction(id, patch, accessToken) {
+  console.log('✏️ updateTransaction:', id, patch)
+  return rawFetch(`transactions?id=eq.${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(patch)
+  }, accessToken).then(arr => arr[0])
 }
 
-export async function deleteTransaction(id) {
-  const { error } = await supabase.from('transactions').delete().eq('id', id)
-  if (error) throw error
+export async function deleteTransaction(id, accessToken) {
+  console.log('🗑️ deleteTransaction:', id)
+  await rawFetch(`transactions?id=eq.${id}`, {
+    method: 'DELETE'
+  }, accessToken)
 }

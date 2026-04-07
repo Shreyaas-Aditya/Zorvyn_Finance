@@ -12,66 +12,100 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let mounted = true
-    
-    // Force loading to false after 5 seconds max
-    const timeout = setTimeout(() => {
-      if (mounted && loading) {
-        console.warn('Auth loading timeout - forcing completion')
-        setLoading(false)
-      }
-    }, 5000)
+    let timeoutId = null
 
     async function init() {
       try {
-        const { data } = await supabase.auth.getSession()
+        // Get current session
+        const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('Failed to get session:', sessionError)
+          if (mounted) {
+            setSession(null)
+            setUser(null)
+            setProfile(null)
+            setLoading(false)
+          }
+          return
+        }
+
         if (!mounted) return
         
-        setSession(data.session)
-        setUser(data.session?.user ?? null)
+        setSession(currentSession)
+        setUser(currentSession?.user ?? null)
 
-        if (data.session?.user?.id) {
+        // Fetch profile if we have a user
+        if (currentSession?.user?.id) {
           try {
-            const userName = data.session.user.user_metadata?.name || data.session.user.email?.split('@')[0]
-            const p = await getOrCreateProfile(data.session.user.id, userName)
-            if (mounted) setProfile(p)
+            const userName = currentSession.user.user_metadata?.name || currentSession.user.email?.split('@')[0]
+            const p = await getOrCreateProfile(currentSession.user.id, userName)
+            if (mounted) {
+              setProfile(p)
+              console.log('Auth: Profile loaded successfully, role:', p.role)
+            }
           } catch (err) {
             console.error('Failed to load/create profile:', err)
             if (mounted) setProfile(null)
           }
+        } else {
+          console.log('Auth: No user session found')
         }
       } catch (err) {
         console.error('Failed to initialize auth:', err)
+        if (mounted) {
+          setSession(null)
+          setUser(null)
+          setProfile(null)
+        }
       } finally {
         if (mounted) {
-          clearTimeout(timeout)
           setLoading(false)
+          console.log('Auth: Initialization complete')
         }
       }
     }
 
+    // Safety timeout to prevent infinite loading
+    timeoutId = setTimeout(() => {
+      if (mounted && loading) {
+        console.warn('Auth: Loading timeout - forcing completion')
+        setLoading(false)
+      }
+    }, 5000)
+
     init()
 
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, nextSession) => {
+      console.log('Auth: State change event:', event)
+      
+      if (!mounted) return
+
       setSession(nextSession)
       setUser(nextSession?.user ?? null)
+      
       if (nextSession?.user?.id) {
         try {
           const userName = nextSession.user.user_metadata?.name || nextSession.user.email?.split('@')[0]
           const p = await getOrCreateProfile(nextSession.user.id, userName)
-          setProfile(p)
+          if (mounted) {
+            setProfile(p)
+            console.log('Auth: Profile updated, role:', p.role)
+          }
         } catch (err) {
-          console.error('Failed to load/create profile:', err)
-          setProfile(null)
+          console.error('Failed to load/create profile on auth change:', err)
+          if (mounted) setProfile(null)
         }
       } else {
-        setProfile(null)
+        if (mounted) setProfile(null)
       }
     })
 
     return () => {
       mounted = false
-      clearTimeout(timeout)
-      sub.subscription?.unsubscribe()
+      if (timeoutId) clearTimeout(timeoutId)
+      subscription?.unsubscribe()
     }
   }, [])
 
@@ -82,7 +116,11 @@ export function AuthProvider({ children }) {
       profile,
       role: profile?.role ?? null,
       loading,
-      signOut: () => supabase.auth.signOut(),
+      signOut: async () => {
+        console.log('🚪 Signing out...')
+        await supabase.auth.signOut()
+        console.log('✅ Signed out successfully')
+      },
     }
   }, [session, user, profile, loading])
 

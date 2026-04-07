@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
 import { listTransactions, createTransaction as apiCreate, updateTransaction as apiUpdate, deleteTransaction as apiDelete } from '../lib/supabase/db'
 import { useAuth } from './AuthContext'
 
@@ -18,49 +18,54 @@ export function TransactionsProvider({ children }) {
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [sort, setSort] = useState({ key: 'date', dir: 'desc' })
 
-  useEffect(() => {
-    let mounted = true
+  // Memoized fetch function - NOW USES ACCESS TOKEN
+  const fetchTransactions = useCallback(async (userId, accessToken) => {
+    if (!userId || !accessToken) {
+      console.log('TransactionsContext: Missing userId or accessToken')
+      setTransactions([])
+      setLoading(false)
+      return
+    }
 
-    async function load() {
-      // Wait for auth to finish loading
-      if (authLoading) {
-        console.log('TransactionsContext: Auth still loading, waiting...')
-        return
-      }
-
-      if (!user?.id) {
-        console.log('TransactionsContext: No user ID, skipping fetch')
-        setTransactions([])
-        setLoading(false)
-        return
-      }
-
-      // Extra safety: ensure we have a session
-      if (!session) {
-        console.log('TransactionsContext: No session, waiting...')
-        return
-      }
-
-      console.log('TransactionsContext: Fetching transactions for user:', user.id)
-      setLoading(true)
+    console.log('TransactionsContext: Fetching transactions for user:', userId)
+    console.log('TransactionsContext: Access token:', accessToken ? 'PROVIDED' : 'MISSING')
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Pass the access token to the API function
+      const rows = await listTransactions(userId, accessToken)
+      console.log('TransactionsContext: ✅ Loaded', rows.length, 'transactions')
+      setTransactions(rows)
       setError(null)
-      try {
-        const rows = await listTransactions(user.id)
-        console.log('TransactionsContext: Loaded transactions:', rows.length)
-        if (mounted) setTransactions(rows)
-      } catch (e) {
-        console.error('TransactionsContext: Error loading transactions:', e)
-        if (mounted) setError(e)
-      } finally {
-        if (mounted) setLoading(false)
-      }
+    } catch (e) {
+      console.error('TransactionsContext: ❌ Error loading transactions:', e)
+      setError(e)
+      setTransactions([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Single useEffect with proper dependencies
+  useEffect(() => {
+    // Don't fetch until auth is ready
+    if (authLoading) {
+      console.log('TransactionsContext: Waiting for auth to complete...')
+      return
     }
 
-    load()
-    return () => {
-      mounted = false
+    // No user = no transactions
+    if (!user?.id || !session?.access_token) {
+      console.log('TransactionsContext: No authenticated user or token, clearing transactions')
+      setTransactions([])
+      setLoading(false)
+      return
     }
-  }, [user?.id, session, authLoading])
+
+    // Fetch transactions WITH the access token
+    fetchTransactions(user.id, session.access_token)
+  }, [user?.id, session?.access_token, authLoading, fetchTransactions])
 
   const categories = useMemo(() => {
     const set = new Set(transactions.map((t) => t.category).filter(Boolean))
@@ -102,37 +107,46 @@ export function TransactionsProvider({ children }) {
   }, [transactions])
 
   async function refresh() {
-    if (!user?.id) return
-    setLoading(true)
-    setError(null)
-    try {
-      const rows = await listTransactions(user.id)
-      setTransactions(rows)
-    } catch (e) {
-      setError(e)
-    } finally {
-      setLoading(false)
+    if (!user?.id || !session?.access_token) {
+      console.warn('Cannot refresh: no user ID or access token')
+      return
     }
+    await fetchTransactions(user.id, session.access_token)
   }
 
   async function addTransaction(payload) {
-    if (!isAdmin) throw new Error('FORBIDDEN')
-    const row = await apiCreate({ ...payload, user_id: user.id })
-    setTransactions((prev) => [row, ...prev])
-    return row
+    if (!isAdmin) throw new Error('FORBIDDEN: Only admins can add transactions')
+    try {
+      const row = await apiCreate({ ...payload, user_id: user.id }, session.access_token)
+      setTransactions((prev) => [row, ...prev])
+      return row
+    } catch (error) {
+      console.error('Failed to add transaction:', error)
+      throw error
+    }
   }
 
   async function updateTransaction(id, patch) {
-    if (!isAdmin) throw new Error('FORBIDDEN')
-    const row = await apiUpdate(id, patch)
-    setTransactions((prev) => prev.map((t) => (t.id === id ? row : t)))
-    return row
+    if (!isAdmin) throw new Error('FORBIDDEN: Only admins can update transactions')
+    try {
+      const row = await apiUpdate(id, patch, session.access_token)
+      setTransactions((prev) => prev.map((t) => (t.id === id ? row : t)))
+      return row
+    } catch (error) {
+      console.error('Failed to update transaction:', error)
+      throw error
+    }
   }
 
   async function deleteTransaction(id) {
-    if (!isAdmin) throw new Error('FORBIDDEN')
-    await apiDelete(id)
-    setTransactions((prev) => prev.filter((t) => t.id !== id))
+    if (!isAdmin) throw new Error('FORBIDDEN: Only admins can delete transactions')
+    try {
+      await apiDelete(id, session.access_token)
+      setTransactions((prev) => prev.filter((t) => t.id !== id))
+    } catch (error) {
+      console.error('Failed to delete transaction:', error)
+      throw error
+    }
   }
 
   const value = {
